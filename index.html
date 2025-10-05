@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabla Numérica</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: #1a1a2e;
+      color: #eee;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 2rem;
+      color: #fff;
+      text-align: center;
+    }
+
+    input[type="text"] {
+      padding: 12px 20px;
+      font-size: 1rem;
+      border: 2px solid #16213e;
+      border-radius: 8px;
+      outline: none;
+      width: 280px;
+      text-align: center;
+      margin-bottom: 15px;
+      background: #0f3460;
+      color: #fff;
+      transition: 0.3s;
+    }
+
+    input[type="text"]:focus {
+      border-color: #00d9ff;
+      background: #16213e;
+    }
+
+    button {
+      margin: 5px;
+      padding: 12px 30px;
+      background: #00d9ff;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      color: #1a1a2e;
+      font-size: 1rem;
+    }
+
+    button:hover {
+      background: #00b8d4;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 217, 255, 0.4);
+    }
+
+    table {
+      margin-top: 30px;
+      border-collapse: collapse;
+      background: #16213e;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    th, td {
+      padding: 15px 30px;
+      text-align: center;
+      border-bottom: 1px solid #0f3460;
+    }
+
+    th {
+      background: #0f3460;
+      color: #00d9ff;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.9rem;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    td.igual {
+      background: #ffd700;
+      color: #1a1a2e;
+      font-weight: bold;
+      border-radius: 6px;
+    }
+
+    .concatenado {
+      margin-top: 20px;
+      font-size: 1.1rem;
+      background: #0f3460;
+      padding: 16px 30px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+      border: 2px solid transparent;
+      max-width: 600px;
+      word-wrap: break-word;
+    }
+
+    .concatenado:hover {
+      background: #16213e;
+      border-color: #00d9ff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 217, 255, 0.2);
+    }
+
+    .concatenado strong {
+      color: #00d9ff;
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .concatenado-valor {
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: 500;
+    }
+
+    .num-igual {
+      background: #ffd700;
+      color: #1a1a2e;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+
+    .num-inverso {
+      background: #9c27b0;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Conversor Numérico</h1>
+  <input type="text" id="entrada" placeholder="Ej: 30 26 82">
+  <button onclick="generarTabla()">Convertir</button>
+
+  <table id="resultado" style="display:none;">
+    <thead>
+      <tr><th>Original</th><th>Convertido</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div id="concatenado1" class="concatenado" style="display:none;" title="Haz clic para copiar"></div>
+  <div id="concatenado2" class="concatenado" style="display:none;" title="Haz clic para copiar"></div>
+
+  <script>
+    const mapa = {
+      '1': '6', '6': '1',
+      '2': '7', '7': '2',
+      '3': '8', '8': '3',
+      '4': '9', '9': '4',
+      '5': '0', '0': '5'
+    };
+
+    function generarTabla() {
+      const input = document.getElementById('entrada').value.trim();
+      const numeros = input.replace(/[^0-9]/g, '').split('');
+      const tbody = document.querySelector('#resultado tbody');
+      tbody.innerHTML = '';
+
+      if (numeros.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="2">Ingresa números válidos</td></tr>';
+        document.getElementById('resultado').style.display = 'table';
+        document.getElementById('concatenado1').style.display = 'none';
+        document.getElementById('concatenado2').style.display = 'none';
+        return;
+      }
+
+      let convertidos = '';
+      let concat2 = [];
+
+      numeros.forEach(n => {
+        const convertido = mapa[n] || n;
+        const clase = n === convertido ? 'class="igual"' : '';
+        const fila = `<tr><td ${clase}>${n}</td><td ${clase}>${convertido}</td></tr>`;
+        tbody.insertAdjacentHTML('beforeend', fila);
+        convertidos += convertido;
+        concat2.push(n + convertido);
+      });
+
+      document.getElementById('resultado').style.display = 'table';
+
+      // Primera concatenación con resaltado
+      const grupos1 = convertidos.match(/.{1,2}/g);
+      const grupos1HTML = grupos1.map(g => resaltarNumero(g)).join(' ');
+      const div1 = document.getElementById('concatenado1');
+      div1.innerHTML = '<strong>Primera concatenación</strong><div class="concatenado-valor">' + grupos1HTML + '</div>';
+      div1.style.display = 'block';
+      div1.onclick = () => copiarTexto(grupos1.join(' '));
+
+      // Segunda concatenación con resaltado
+      const grupos2HTML = concat2.map(g => resaltarNumero(g)).join(' ');
+      const div2 = document.getElementById('concatenado2');
+      div2.innerHTML = '<strong>Segunda concatenación</strong><div class="concatenado-valor">' + grupos2HTML + '</div>';
+      div2.style.display = 'block';
+      div2.onclick = () => copiarTexto(concat2.join(' '));
+    }
+
+    function resaltarNumero(num) {
+      if (num.length === 2) {
+        const a = num[0];
+        const b = num[1];
+        
+        // Si ambos dígitos son iguales
+        if (a === b) {
+          return `<span class="num-igual">${num}</span>`;
+        }
+        
+        // Si son inversos (ej: 49 y 94)
+        const invertido = b + a;
+        if (num === invertido) {
+          return `<span class="num-inverso">${num}</span>`;
+        }
+      }
+      
+      return num;
+    }
+
+    function copiarTexto(texto) {
+      navigator.clipboard.writeText(texto);
+      const divs = [document.getElementById('concatenado1'), document.getElementById('concatenado2')];
+      divs.forEach(div => {
+        const original = div.innerHTML;
+        const textoActual = div.textContent;
+        if (textoActual.includes(texto.replace(/ /g, ''))) {
+          div.innerHTML = div.innerHTML.replace('</div>', ' ✅ Copiado</div>');
+          setTimeout(() => div.innerHTML = original, 1500);
+        }
+      });
+    }
+
+    document.getElementById('entrada').addEventListener('keydown', e => {
+      if (e.key === 'Enter') generarTabla();
+    });
+  </script>
+</body>
+</html>
